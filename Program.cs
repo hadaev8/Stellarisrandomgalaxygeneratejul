@@ -235,8 +235,8 @@ namespace galgen
         {
             Console.WindowHeight = 50;
             Console.WindowWidth = 150;
-            //string directory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "генерация текста";
-            string directory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "генерация текста");
+            //string directory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string newdirectory = Path.Combine(directory, "map_new");
             string picdirectory = Path.Combine(directory, "map_pics");
             string Way_out_pic = null;
@@ -276,7 +276,7 @@ namespace galgen
                 GenJulSet(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref starcount, ref c);
 
                 // export to console
-                //exporttoconsole(vect);
+                exporttoconsole(vect);
 
                 // export to pic
                 exporttopic(vect, Way_out_pic);
