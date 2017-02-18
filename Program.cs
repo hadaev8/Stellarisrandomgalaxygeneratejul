@@ -174,6 +174,9 @@ namespace galgen
                 goto startofcycle;
             }
             Console.WriteLine(vect.Count);
+            //exporttoconsole(vect);
+            //if (Console.ReadKey().Key == ConsoleKey.Enter)
+            //    goto startofcycle;
         }
         public static void exporttoconsole(List<Tuple<int, int>> vect)
         {
@@ -198,7 +201,7 @@ namespace galgen
             using (StreamWriter sw = new StreamWriter(Way_out_file))
             {
                 Shuffle(vect, rnd);
-                sw.Write("static_galaxy_scenario = {\n	name = \"" + filename.Replace(".txt", "") + " stars: " + (starcount + 1) + "\"\n	priority = 0\n	default = no\n	colonizable_planet_odds = 1.0\n	num_empires = { min = 0 max = 60 }\n	num_empire_default = 21\n	fallen_empire_default = 4\n	fallen_empire_max = 4\n	advanced_empire_default = 7\n	core_radius = 0\n	random_hyperlanes = yes\n\n");
+                sw.Write(string.Format("static_galaxy_scenario = {\n\tname = \"{0} stars: {1}\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n", filename.Replace(".txt", ""), (starcount + 1)););
                 starcount = -1;
                 foreach (Tuple<int, int> currenttuple in vect)
                 {
@@ -215,14 +218,14 @@ namespace galgen
                     else if (y < -500)
                         y += 8;
                     starcount++;
-                    sw.Write("	system = {\n		id = " + starcount + "\n		position = {\n			x = " + x + "\n			y = " + y + "\n		}\n	}\r");
+                    sw.Write("\tsystem = {\n\t\tid = " + starcount + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
                     if (rnd.Next(250) == 1)
                     {
                         rand = rnd.Next(40, 100);
-                        sw.Write("	nebula = {\n		position = {\n			x = " + x + "\n			y = " + y + "\n		}\n		radius = " + rand + "\n	}\r");
+                        sw.Write("\tnebula = {\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t\tradius = " + rand + "\n\t}\r");
                     }
                 }
-                sw.Write("	system = {\n		id = " + (starcount + 1).ToString() + "\n		position = {\n          x = 0\n          y = 0\n		}\n	}\r");
+                sw.Write("\tsystem = {\n\t\tid = " + (starcount + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
                 sw.Write("}\n#h = " + h + "\n#w = " + w + "\n#c = " + c + "\n#zoom = " + zoom + "\n#iter = " + maxIter + "\n#randh = " + randh + "\n#randw = " + randw);
             }
             Console.WriteLine(filename);
@@ -258,10 +261,10 @@ namespace galgen
             //       Parallel.For(1, 100, index =>
             Stopwatch st = new Stopwatch();
             st.Start();
-            for (int index = 1; index < 101; index++)
+            for (int index = 1; index < 10; index++)
             {
                 // file name
-                string filename = "Insane Julia Set Rand NS " + index.ToString();
+                string filename = "Insane Julia Set Rand NS " + index;
                 Way_out_pic = Path.Combine(picdirectory, filename + ".jpg");
                 Way_out_file = Path.Combine(newdirectory, filename + ".txt");
 
