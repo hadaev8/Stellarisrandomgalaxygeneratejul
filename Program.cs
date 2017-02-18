@@ -68,12 +68,11 @@ namespace galgen
                         --i;
                     }
                     if (i == 0)
-                    { eptline = false; }
+                        eptline = false;
                 }
                 if (eptline)
-                {
-                    { goto startofcycle; }
-                }
+                    goto startofcycle;
+
             }
             for (double x = h - h * zoom + randw; x < h * zoom + randw; x++)
             {
@@ -87,12 +86,12 @@ namespace galgen
                         --i;
                     }
                     if (i == 0)
-                    { eptline = false; }
+                        eptline = false;
                 }
                 if (eptline)
-                {
-                    { goto startofcycle; }
-                }
+
+                    goto startofcycle;
+
             }
             for (double y = h * zoom + randh; y > h - h * zoom + randh; y--)
             {
@@ -106,12 +105,11 @@ namespace galgen
                         --i;
                     }
                     if (i == 0)
-                    { eptline = false; }
+                        eptline = false;
                 }
                 if (eptline)
-                {
-                    { goto startofcycle; }
-                }
+                    goto startofcycle;
+
             }
             for (double x = h * zoom + randw; x > h - h * zoom + randw; x--)
             {
@@ -125,12 +123,11 @@ namespace galgen
                         --i;
                     }
                     if (i == 0)
-                    { eptline = false; }
+                        eptline = false;
                 }
                 if (eptline)
-                {
-                    { goto startofcycle; }
-                }
+                    goto startofcycle;
+
             }
             int yy = 0;
             for (double y = h - h * zoom + randh; y < h * zoom + randh; y++)
@@ -148,19 +145,13 @@ namespace galgen
                     if (i == 0)
                     {
                         if (povtor > 0 && predx == x - 1)
-                        {
                             povtor--;
-                        }
                         else
                         {
                             if (predx == x - 1)
-                            {
                                 povtor = 2;
-                            }
                             else
-                            {
                                 povtor = 0;
-                            }
                         }
                         predx = x;
                         if (povtor == 0)
@@ -171,10 +162,10 @@ namespace galgen
                     }
                     xx++;
                 }
+
                 if (starcount > 3000)
-                {
                     goto startofcycle;
-                }
+
                 yy++;
             }
             // отсекаем слишком полные и слишком пустые
@@ -183,11 +174,6 @@ namespace galgen
                 goto startofcycle;
             }
             Console.WriteLine(vect.Count);
-            //exporttoconsole(vect);
-            //if (Console.ReadKey().Key == ConsoleKey.Enter)
-            //{
-            //    goto startofcycle;
-            //}
         }
         public static void exporttoconsole(List<Tuple<int, int>> vect)
         {
@@ -203,9 +189,8 @@ namespace galgen
         {
             Bitmap image = new Bitmap(100, 100);
             foreach (Tuple<int, int> currenttuple in vect)
-            {
                 image.SetPixel(currenttuple.Item1, currenttuple.Item2, Color.Black);
-            }
+
             image.Save(Way_out_pic);
         }
         public static void exporttofile(List<Tuple<int, int>> vect, int w, int h, int maxIter, double zoom, Random rnd, ref int randh, ref int randw, ref int starcount, ref Complex c, string filename, string Way_out_file)
@@ -213,7 +198,7 @@ namespace galgen
             using (StreamWriter sw = new StreamWriter(Way_out_file))
             {
                 Shuffle(vect, rnd);
-                sw.Write("static_galaxy_scenario = {\n	name = \"" + filename.Replace(".txt", "") + " stars: " + (starcount + 1).ToString() + "\"\n	priority = 0\n	default = no\n	colonizable_planet_odds = 1.0\n	num_empires = { min = 0 max = 60 }\n	num_empire_default = 21\n	fallen_empire_default = 4\n	fallen_empire_max = 4\n	advanced_empire_default = 7\n	core_radius = 0\n	random_hyperlanes = yes\n\n");
+                sw.Write("static_galaxy_scenario = {\n	name = \"" + filename.Replace(".txt", "") + " stars: " + (starcount + 1) + "\"\n	priority = 0\n	default = no\n	colonizable_planet_odds = 1.0\n	num_empires = { min = 0 max = 60 }\n	num_empire_default = 21\n	fallen_empire_default = 4\n	fallen_empire_max = 4\n	advanced_empire_default = 7\n	core_radius = 0\n	random_hyperlanes = yes\n\n");
                 starcount = -1;
                 foreach (Tuple<int, int> currenttuple in vect)
                 {
@@ -222,19 +207,19 @@ namespace galgen
                     rand = rnd.Next(-5, 6);
                     int y = (10 * (currenttuple.Item2 - 50) + rand);
                     if (x > 500)
-                    { x -= 8; }
-                    if (x < -500)
-                    { x += 8; }
+                        x -= 8;
+                    else if (x < -500)
+                        x += 8;
                     if (y > 500)
-                    { y -= 8; }
-                    if (y < -500)
-                    { y += 8; }
+                        y -= 8;
+                    else if (y < -500)
+                        y += 8;
                     starcount++;
-                    sw.Write("	system = {\n		id = " + starcount.ToString() + "\n		position = {\n			x = " + x.ToString() + "\n			y = " + y.ToString() + "\n		}\n	}\r");
+                    sw.Write("	system = {\n		id = " + starcount + "\n		position = {\n			x = " + x + "\n			y = " + y + "\n		}\n	}\r");
                     if (rnd.Next(250) == 1)
                     {
                         rand = rnd.Next(40, 100);
-                        sw.Write("	nebula = {\n		position = {\n			x = " + x.ToString() + "\n			y = " + y.ToString() + "\n		}\n		radius = " + rand.ToString() + "\n	}\r");
+                        sw.Write("	nebula = {\n		position = {\n			x = " + x + "\n			y = " + y + "\n		}\n		radius = " + rand + "\n	}\r");
                     }
                 }
                 sw.Write("	system = {\n		id = " + (starcount + 1).ToString() + "\n		position = {\n          x = 0\n          y = 0\n		}\n	}\r");
@@ -242,7 +227,7 @@ namespace galgen
             }
             Console.WriteLine(filename);
         }
-        
+
         public static void Main(string[] args)
         {
             Console.WindowHeight = 50;
@@ -254,13 +239,9 @@ namespace galgen
             string Way_out_pic = null;
             string Way_out_file = null;
             if (Directory.Exists(newdirectory))
-            {
                 Directory.Delete(newdirectory, true);
-            }
             if (Directory.Exists(picdirectory))
-            {
                 Directory.Delete(picdirectory, true);
-            }
             Directory.CreateDirectory(newdirectory);
             Directory.CreateDirectory(picdirectory);
             var rnd = new Random(726568);
@@ -284,7 +265,7 @@ namespace galgen
                 Way_out_pic = Path.Combine(picdirectory, filename + ".jpg");
                 Way_out_file = Path.Combine(newdirectory, filename + ".txt");
 
-                
+
                 // create list for dots
                 List<Tuple<int, int>> vect = new List<Tuple<int, int>>();
 
@@ -296,26 +277,10 @@ namespace galgen
 
                 // export to pic
                 exporttopic(vect, Way_out_pic);
-                
+
                 // export to stellaris file
                 exporttofile(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref starcount, ref c, filename, Way_out_file);
-                
-                //Console.WriteLine("r = " + r);
-                //Console.WriteLine("xmax = " + xmax);
-                //Console.WriteLine("xmin = " + xmin);
-                //Console.WriteLine("ymax = " + ymax);
-                //Console.WriteLine("ymin = " + ymin);
-                //Console.WriteLine("osob = " + osob);
-                //Console.WriteLine("star = " + starcount);
-                //Console.WriteLine("nebula = " + nebula);
-                //Console.WriteLine("iter = " + maxIter);
-                //Console.WriteLine("h = " + h);
-                //Console.WriteLine("w = " + w);
-                //Console.WriteLine("zoom = " + zoom);
-                //Console.WriteLine("randh = " + randh);
-                //Console.WriteLine("randw = " + randw);
-
-            }//);
+            }
             st.Stop();
             Console.WriteLine(st.Elapsed);
         }
