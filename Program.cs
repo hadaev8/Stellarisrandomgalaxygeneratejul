@@ -201,7 +201,7 @@ namespace galgen
             using (StreamWriter sw = new StreamWriter(Way_out_file))
             {
                 Shuffle(vect, rnd);
-                sw.Write(string.Format("static_galaxy_scenario = {\n\tname = \"{0} stars: {1}\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n", filename.Replace(".txt", ""), (starcount + 1)););
+                sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (starcount + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
                 starcount = -1;
                 foreach (Tuple<int, int> currenttuple in vect)
                 {
