@@ -1,6 +1,6 @@
 c:\users\андрей\documents\visual studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\bin\Debug\Stellarisrandomgalaxygeneratejul.exe.config
 c:\Users\Андрей\Documents\Visual Studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\bin\Debug\Stellarisrandomgalaxygeneratejul.exe
 c:\Users\Андрей\Documents\Visual Studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\bin\Debug\Stellarisrandomgalaxygeneratejul.pdb
-c:\Users\Андрей\Documents\Visual Studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\obj\Debug\Stellarisrandomgalaxygeneratejul.csprojResolveAssemblyReference.cache
 c:\Users\Андрей\Documents\Visual Studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\obj\Debug\Stellarisrandomgalaxygeneratejul.exe
 c:\Users\Андрей\Documents\Visual Studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\obj\Debug\Stellarisrandomgalaxygeneratejul.pdb
+C:\Users\Андрей\documents\visual studio 2015\Projects\Stellarisrandomgalaxygeneratejul\Stellarisrandomgalaxygeneratejul\obj\Debug\Stellarisrandomgalaxygeneratejul.csprojResolveAssemblyReference.cache

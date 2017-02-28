@@ -4,7 +4,7 @@ using System.Numerics;
 using System.IO;
 using System.Drawing;
 using System.Diagnostics;
-
+using System.Threading.Tasks;
 
 namespace galgen
 {
@@ -22,11 +22,8 @@ namespace galgen
                 list[n] = value;
             }
         }
-        public static void GenJulSet(List<Tuple<int, int>> vect, int w, int h, int maxIter, double zoom, Random rnd, ref int randh, ref int randw, ref int starcount, ref Complex c)
+        public static void GenJulSet(List<Tuple<int, int>> vect, int w, int h, int maxIter, double zoom, Random rnd, ref int randh, ref int randw, ref Complex c)
         {
-            // вспомогательные переменные для приведения координат
-            double zoomkoorh = Math.Abs(h - 2 * h * zoom);
-            double zoomkoorw = Math.Abs(w - 2 * w * zoom);
             startofcycle:
             vect.Clear();
             // рандомим произвольную постоянную
@@ -45,8 +42,6 @@ namespace galgen
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
             double xStep = 2 * r / w;
             double yStep = 2 * r / h;
-            // число звезд
-            starcount = 0;
             // рандомный сдвиг, если нужен
             randw = rnd.Next(-w / 2, w / 2);
             randh = rnd.Next(-h / 2, h / 2);
@@ -89,7 +84,6 @@ namespace galgen
                         eptline = false;
                 }
                 if (eptline)
-
                     goto startofcycle;
 
             }
@@ -157,23 +151,18 @@ namespace galgen
                         if (povtor == 0)
                         {
                             vect.Add(new Tuple<int, int>(xx, yy));
-                            starcount++;
                         }
                     }
                     xx++;
                 }
-
-                if (starcount > 3000)
-                    goto startofcycle;
-
                 yy++;
+                if (vect.Count > 3000)
+                    goto startofcycle;
             }
             // отсекаем слишком полные и слишком пустые
-            if (starcount > 3000 || starcount < 50)
-            {
+            if (vect.Count < 50)
                 goto startofcycle;
-            }
-            Console.WriteLine(vect.Count);
+            //Console.WriteLine(vect.Count);
             //exporttoconsole(vect);
             //if (Console.ReadKey().Key == ConsoleKey.Enter)
             //    goto startofcycle;
@@ -196,13 +185,12 @@ namespace galgen
 
             image.Save(Way_out_pic);
         }
-        public static void exporttofile(List<Tuple<int, int>> vect, int w, int h, int maxIter, double zoom, Random rnd, ref int randh, ref int randw, ref int starcount, ref Complex c, string filename, string Way_out_file)
+        public static void exporttofile(List<Tuple<int, int>> vect, int w, int h, int maxIter, double zoom, Random rnd, Tuple<int, int, int, Complex> currentlog, string filename, string Way_out_file)
         {
             using (StreamWriter sw = new StreamWriter(Way_out_file))
             {
                 Shuffle(vect, rnd);
-                sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (starcount + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
-                starcount = -1;
+                sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (vect.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
                 foreach (Tuple<int, int> currenttuple in vect)
                 {
                     int rand = rnd.Next(-5, 6);
@@ -217,72 +205,112 @@ namespace galgen
                         y -= 8;
                     else if (y < -500)
                         y += 8;
-                    starcount++;
-                    sw.Write("\tsystem = {\n\t\tid = " + starcount + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
+                    sw.Write("\tsystem = {\n\t\tid = " + vect.IndexOf(currenttuple) + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
                     if (rnd.Next(250) == 1)
                     {
                         rand = rnd.Next(40, 100);
                         sw.Write("\tnebula = {\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t\tradius = " + rand + "\n\t}\r");
                     }
                 }
-                sw.Write("\tsystem = {\n\t\tid = " + (starcount + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
-                sw.Write("}\n#h = " + h + "\n#w = " + w + "\n#c = " + c + "\n#zoom = " + zoom + "\n#iter = " + maxIter + "\n#randh = " + randh + "\n#randw = " + randw);
+                sw.Write("\tsystem = {\n\t\tid = " + (vect.Count + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
+                sw.Write("}\n#h = " + h + "\n#w = " + w + "\n#c = " + currentlog.Item4 + "\n#zoom = " + zoom + "\n#iter = " + maxIter + "\n#randh = " + currentlog.Item2 + "\n#randw = " + currentlog.Item3);
             }
             Console.WriteLine(filename);
         }
 
         public static void Main(string[] args)
         {
-            Console.WindowHeight = 50;
-            Console.WindowWidth = 150;
-            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "генерация текста");
-            //string directory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            //    Console.WindowHeight = 50;
+            //    Console.WindowWidth = 150;
+            Console.WindowHeight = Console.LargestWindowHeight;
+            Console.WindowWidth = Console.LargestWindowWidth;
+            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "text generation");
             string newdirectory = Path.Combine(directory, "map_new");
             string picdirectory = Path.Combine(directory, "map_pics");
+            string picdirectorygood = Path.Combine(directory, "good_pics");
+            string picdirectorybad = Path.Combine(directory, "bad_pics");
             string Way_out_pic = null;
-            string Way_out_file = null;
             if (Directory.Exists(newdirectory))
                 Directory.Delete(newdirectory, true);
             if (Directory.Exists(picdirectory))
                 Directory.Delete(picdirectory, true);
+            if (Directory.Exists(picdirectorygood))
+                Directory.Delete(picdirectorygood, true);
+            if (Directory.Exists(picdirectorybad))
+                Directory.Delete(picdirectorybad, true);
             Directory.CreateDirectory(newdirectory);
-            Directory.CreateDirectory(picdirectory);
+            //Directory.CreateDirectory(picdirectory);
+            Directory.CreateDirectory(picdirectorygood);
+            Directory.CreateDirectory(picdirectorybad);
             var rnd = new Random(726568);
             // set parameters
             int w = 10000;
             int h = 10000;
             int maxIter = 350;
             double zoom = 0.505;
+
+            //double zoomkoorh = Math.Abs(h - 2 * h * zoom);
+            //double zoomkoorw = Math.Abs(w - 2 * w * zoom);
             // other values
             int randw = 0;
             int randh = 0;
-            int starcount = 0;
             Complex c = 0;
-            //       Parallel.For(1, 100, index =>
+
+
             Stopwatch st = new Stopwatch();
             st.Start();
-            for (int index = 1; index < 10; index++)
+
+            List<List<Tuple<int, int>>> maps = new List<List<Tuple<int, int>>>();
+            List<Tuple<int, int, int, Complex>> log = new List<Tuple<int, int, int, Complex>>();
+            int startvalue = 400;
+            Parallel.For(startvalue, startvalue + 201, index =>
+            //for (int index = startvalue; index < startvalue + 201; index++)
+            {
+                List<Tuple<int, int>> vect = new List<Tuple<int, int>>();
+                GenJulSet(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref c);
+                maps.Add(vect);
+                log.Add(new Tuple<int, int, int, Complex>(0, randh, randw, c));
+                Console.WriteLine(index);
+            });
+            Console.WriteLine(st.Elapsed);
+            foreach (List<Tuple<int, int>> vect in maps)
+            //for (int index = 400; index < 601; index++)
             {
                 // file name
-                string filename = "Insane Julia Set Rand NS " + index;
-                Way_out_pic = Path.Combine(picdirectory, filename + ".jpg");
-                Way_out_file = Path.Combine(newdirectory, filename + ".txt");
-
-
-                // create list for dots
-                List<Tuple<int, int>> vect = new List<Tuple<int, int>>();
-
+                string filename = "Insane Julia Set Rand NS " + (maps.IndexOf(vect) + startvalue);
+                
                 // generate julia set
-                GenJulSet(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref starcount, ref c);
+                //GenJulSet(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref c);
 
                 // export to console
                 exporttoconsole(vect);
 
+                Way_out_pic = Path.Combine(picdirectorybad, filename + ".jpg");
+                
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                {
+                    Way_out_pic = Path.Combine(picdirectorygood, filename + ".jpg");
+
+                    // лучше я не придумал для замены 1 значения тупла
+                    Tuple<int, int, int, Complex> currentlog = log[maps.IndexOf(vect)];
+                    currentlog = new Tuple<int, int, int, Complex>(1, currentlog.Item2, currentlog.Item3, currentlog.Item4);
+                    log.RemoveAt(maps.IndexOf(vect));
+                    log.Insert(maps.IndexOf(vect), currentlog);
+
+                    // вывод в файл, если удачно
+                    exporttofile(vect, w, h, maxIter, zoom, rnd, log[maps.IndexOf(vect)], filename, Path.Combine(newdirectory, filename + ".txt"));
+                }
+
+                Console.Clear();
+
                 // export to pic
                 exporttopic(vect, Way_out_pic);
-
-                // export to stellaris file
-                exporttofile(vect, w, h, maxIter, zoom, rnd, ref randh, ref randw, ref starcount, ref c, filename, Way_out_file);
+                
+            }//);
+            using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
+            {
+                foreach (Tuple<int, int, int, Complex> currenttuple in log)
+                    sw.Write(currenttuple + "\n");
             }
             st.Stop();
             Console.WriteLine(st.Elapsed);
