@@ -22,7 +22,6 @@ namespace galgen
                 list[n] = value;
             }
         }
-
         public static List<Point> GenJulSet(int w, int h, int maxIter, double zoom, int randomSeed)
         {
             List<Point> vect = new List<Point>();
@@ -65,11 +64,11 @@ namespace galgen
 
             bool eptline = true;
             // первая строка по иксу (y = 0)
-            Parallel.For(0, 99, (index, loopState) =>
-            //for (double x = xfirst; x < xlast; x++)
+            //Parallel.For(0, 99, (index, loopState) =>
+            for (double x = xfirst; x < xlast; x++)
             {
                 int i = maxIter;
-                Complex z = new Complex(-r + (xfirst + index) * xStep, -r + yfirst * yStep);
+                Complex z = new Complex(-r + x * xStep, -r + yfirst * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
                     z = (z * z + c);
@@ -78,20 +77,21 @@ namespace galgen
                 if (i == 0)
                 {
                     eptline = false;
-                    loopState.Stop();
+                    break;
+                    //loopState.Stop();
                 }
-            });
+            }//);
             if (eptline)// == false)
             {
                 goto startofcycle;
             }
             // последняя строка по иксу (y = 99)
             eptline = true;
-            //for (double x = xfirst; x < xlast; x++)
-            Parallel.For(0, 99, (index, loopState) =>
+            for (double x = xfirst; x < xlast; x++)
+            //Parallel.For(0, 99, (index, loopState) =>
             {
                 int i = maxIter;
-                Complex z = new Complex(-r + (xfirst + index) * xStep, -r + ylast * yStep);
+                Complex z = new Complex(-r + x * xStep, -r + ylast * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
                     z = (z * z + c);
@@ -100,20 +100,21 @@ namespace galgen
                 if (i == 0)
                 {
                     eptline = false;
-                    loopState.Stop();
+                    break;
+                    //loopState.Stop();
                 }
-            });
+            }//);
             if (eptline)// == false)
             {
                 goto startofcycle;
             }
             // первая строка по игреку (x = 0)
             eptline = true;
-            //for (double y = yfirst; y < ylast; y++)
-            Parallel.For(0, 99, (index, loopState) =>
+            for (double y = yfirst; y < ylast; y++)
+            //Parallel.For(0, 99, (index, loopState) =>
             {
                 int i = maxIter;
-                Complex z = new Complex(-r + xfirst * xStep, -r + (yfirst + index) * yStep);
+                Complex z = new Complex(-r + xfirst * xStep, -r + y * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
                     z = (z * z + c);
@@ -122,20 +123,21 @@ namespace galgen
                 if (i == 0)
                 {
                     eptline = false;
-                    loopState.Stop();
+                    break;
+                    //loopState.Stop();
                 }
-            });
+            }//);
             if (eptline)// == false)
             {
                 goto startofcycle;
             }
             // последняя строка по игреку (x = 99)
             eptline = true;
-            //for (double y = yfirst; y < ylast; y++)
-            Parallel.For(0, 99, (index, loopState) =>
+            for (double y = yfirst; y < ylast; y++)
+            //Parallel.For(0, 99, (index, loopState) =>
             {
                 int i = maxIter;
-                Complex z = new Complex(-r + xlast * xStep, -r + (yfirst + index) * yStep);
+                Complex z = new Complex(-r + xlast * xStep, -r + y * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
                     z = (z * z + c);
@@ -144,23 +146,24 @@ namespace galgen
                 if (i == 0)
                 {
                     eptline = false;
-                    loopState.Stop();
+                    break;
+                    //loopState.Stop();
                 }
-            });
+            }//);
             if (eptline)// == false)
             {
                 goto startofcycle;
             }
-            //int yy = 0;
+            int yy = 0;
 
-            Parallel.For(0, 99, (index, loopState) =>
-            //for (double y = yfirst; y < ylast; y++)
+            //Parallel.For(0, 99, (index, loopState) =>
+            for (double y = yfirst; y < ylast; y++)
             {
                 int xx = 0;
                 for (double x = xfirst; x < xlast; x++)
                 {
                     int i = maxIter;
-                    Complex z = new Complex(-r + x * xStep, -r + (yfirst + index) * yStep);
+                    Complex z = new Complex(-r + x * xStep, -r + y * yStep);
                     while (Complex.Abs(z) < r && i != 0)
                     {
                         z = (z * z + c);
@@ -185,20 +188,20 @@ namespace galgen
                     }
                     xx++;
                 }
-                //yy++;
+                yy++;
                 if (vect.Count > 3000)
                     //loopState.Stop();
                     goto startofcycle;
             }//);
-        startofcycle:
+            startofcycle:
             return vect;
         }
         public static void exporttoconsole(List<Point> vect)
         {
             Console.Clear();
-            foreach (Point currenttuple in vect)
+            foreach (Point currentpoint in vect)
             {
-                Console.SetCursorPosition(currenttuple.x, currenttuple.y);
+                Console.SetCursorPosition(currentpoint.x, currentpoint.y);
                 Console.Write('#');
             }
             Console.WriteLine();
@@ -206,8 +209,8 @@ namespace galgen
         public static void exporttopic(List<Point> vect, string Way_out_pic)
         {
             Bitmap image = new Bitmap(100, 100);
-            foreach (Point currenttuple in vect)
-                image.SetPixel(currenttuple.x, currenttuple.y, Color.Black);
+            foreach (Point currentpoint in vect)
+                image.SetPixel(currentpoint.x, currentpoint.y, Color.Black);
 
             image.Save(Way_out_pic);
         }
@@ -217,12 +220,12 @@ namespace galgen
             {
                 Shuffle(vect, rnd);
                 sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (vect.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
-                foreach (Point currenttuple in vect)
+                foreach (Point currentpoint in vect)
                 {
                     int rand = rnd.Next(-2, 3);
-                    int x = (10 * (currenttuple.x - 50) + rand);
+                    int x = (10 * (currentpoint.x - 50) + rand);
                     rand = rnd.Next(-2, 3);
-                    int y = (10 * (currenttuple.y - 50) + rand);
+                    int y = (10 * (currentpoint.y - 50) + rand);
                     if (x > 500)
                         x -= 8;
                     else if (x < -500)
@@ -231,7 +234,7 @@ namespace galgen
                         y -= 8;
                     else if (y < -500)
                         y += 8;
-                    sw.Write("\tsystem = {\n\t\tid = " + vect.IndexOf(currenttuple) + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
+                    sw.Write("\tsystem = {\n\t\tid = " + vect.IndexOf(currentpoint) + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
                     if (rnd.Next(250) == 1)
                     {
                         rand = rnd.Next(40, 100);
@@ -280,8 +283,8 @@ namespace galgen
 
             List<List<Point>> maps = new List<List<Point>>();
             List<Log> log = new List<Log>();
-            int startvalue = 1600;
-            Parallel.For(startvalue, startvalue + 21, index =>
+            int startvalue = 1800;
+            Parallel.For(startvalue, startvalue + 201, index =>
             //for (int index = startvalue; index < startvalue + 21; index++)
             {
                 List<Point> vect = new List<Point>();
@@ -292,7 +295,7 @@ namespace galgen
 
                 maps.Add(vect);
                 log.Add(new Log((maps.Count - 1), 0, randh, randw, c.Real, c.Imaginary));
-                Console.WriteLine(index);
+                Console.WriteLine(maps.Count/2);
             });
             Console.WriteLine(st.Elapsed);
             Console.WriteLine(maps.Count);
@@ -309,12 +312,7 @@ namespace galgen
                 //if (Console.ReadKey().Key == ConsoleKey.Enter)
                 //{
                 //    Way_out_pic = Path.Combine(picdirectorygood, filename + ".jpg");
-
-                //    // лучше я не придумал для замены 1 значения тупла
-                //    Tuple<int, int, int, int, double, double> currentlog = log[maps.IndexOf(vect)];
-                //    currentlog = new Tuple<int, int, int, int, double, double>(1, currentlog.Item2, currentlog.Item3, currentlog.Item4, currentlog.Item5, currentlog.Item6);
-                //    log.RemoveAt(maps.IndexOf(vect));
-                //    log.Insert(maps.IndexOf(vect), currentlog);
+                
 
                 //}
 
@@ -329,8 +327,8 @@ namespace galgen
             }
             //using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
             //{
-            //    foreach (Tuple<int, int, int, int, double, double> currenttuple in log)
-            //        sw.Write(currenttuple + "\n");
+            //    foreach (Tuple<int, int, int, int, double, double> currentpoint in log)
+            //        sw.Write(currentpoint + "\n");
             //}
             st.Stop();
             Console.WriteLine(st.Elapsed);
