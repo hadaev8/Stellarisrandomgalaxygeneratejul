@@ -43,8 +43,6 @@ namespace galgen
         public static List<Tuple<int, int>> GenJulSet(int w, int h, int maxIter, double zoom, Random rnd, int randh, int randw, Complex c)
         {
             List<Tuple<int, int>> vect = new List<Tuple<int, int>>();
-            
-
             // вспомогательные переменные для приведения координат
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
             double xStep = 2 * r / w;
@@ -78,7 +76,7 @@ namespace galgen
                     loopState.Stop();
                 }
             });
-            if (eptline == false)
+            if (eptline)// == false)
             {
                 goto startofcycle;
             }
@@ -100,7 +98,7 @@ namespace galgen
                     loopState.Stop();
                 }
             });
-            if (eptline == false)
+            if (eptline)// == false)
             {
                 goto startofcycle;
             }
@@ -122,7 +120,7 @@ namespace galgen
                     loopState.Stop();
                 }
             });
-            if (eptline == false)
+            if (eptline)// == false)
             {
                 goto startofcycle;
             }
@@ -144,20 +142,20 @@ namespace galgen
                     loopState.Stop();
                 }
             });
-            if (eptline == false)
+            if (eptline)// == false)
             {
                 goto startofcycle;
             }
-            int yy = 0;
+            //int yy = 0;
 
-            //Parallel.For(0, 99, (index, loopState) =>
-            for (double y = yfirst; y < ylast; y++)
+            Parallel.For(0, 99, (index, loopState) =>
+            //for (double y = yfirst; y < ylast; y++)
             {
                 int xx = 0;
                 for (double x = xfirst; x < xlast; x++)
                 {
                     int i = maxIter;
-                    Complex z = new Complex(-r + x * xStep, -r + y * yStep);
+                    Complex z = new Complex(-r + x * xStep, -r + (yfirst + index) * yStep);
                     while (Complex.Abs(z) < r && i != 0)
                     {
                         z = (z * z + c);
@@ -177,24 +175,16 @@ namespace galgen
                         predx = x;
                         if (povtor == 0)
                         {
-                            vect.Add(new Tuple<int, int>(xx, yy));
-                            //try
-                            //{
-                            //    vect.Add(new Tuple<int, int>(xx, yy));
-                            //}
-                            //catch (Exception e)
-                            //{
-                            //    Console.WriteLine(e);
-                            //}
+                            vect.Add(new Tuple<int, int>(xx, index));
                         }
                     }
                     xx++;
                 }
-                yy++;
+                //yy++;
                 if (vect.Count > 3000)
-                    //loopState.Stop();
-                    goto startofcycle;
-            }//);
+                    loopState.Stop();
+                    //goto startofcycle;
+            });
             startofcycle:
             return vect;
         }
@@ -282,7 +272,6 @@ namespace galgen
             int randh = 0;
             Complex c = 0;
 
-
             Stopwatch st = new Stopwatch();
             st.Start();
 
@@ -290,7 +279,7 @@ namespace galgen
             List<Tuple<int, int, int, int, double, double>> log = new List<Tuple<int, int, int, int, double, double>>();
             int startvalue = 1600;
             //Parallel.For(startvalue, startvalue + 21, index =>
-            for (int index = startvalue; index < startvalue + 21; index++)
+            for (int index = startvalue; index < startvalue + 200; index++)
             {
                 // generate julia set
                 startofcycle:
