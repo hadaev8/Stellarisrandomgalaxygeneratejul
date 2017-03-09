@@ -22,41 +22,33 @@ namespace galgen
                 list[n] = value;
             }
         }
-        public static List<Point> GenJulSet(int w, int h, int maxIter, double zoom, int randomSeed)
+        public static void GenJulSet(JulSet currentjulset, Random rnd)
         {
-            List<Point> vect = new List<Point>();
-
-            Random rnd;
-            if (randomSeed == 0)
-                rnd = new Random();
-            else
-                rnd = new Random(randomSeed);
-
             // рандомим произвольную постоянную
-            double c1 = rnd.NextDouble();
-            double c2 = rnd.NextDouble();
+            currentjulset.c1 = rnd.NextDouble();
+            currentjulset.c2 = rnd.NextDouble();
             if (rnd.Next(2) == 1)
             {
-                c1 = c1 * (-1);
+                currentjulset.c1 = currentjulset.c1 * (-1);
             }
             if (rnd.Next(2) == 1)
             {
-                c2 = c2 * (-1);
+                currentjulset.c2 = currentjulset.c2 * (-1);
             }
-            Complex c = new Complex(c1, c2);
+            Complex c = new Complex(currentjulset.c1, currentjulset.c2);
             // рандомный сдвиг, если нужен
-            int randw = rnd.Next(-w / 2, w / 2);
-            int randh = rnd.Next(-h / 2, h / 2);
+            currentjulset.randw = rnd.Next(-currentjulset.w / 2, currentjulset.w / 2);
+            currentjulset.randh = rnd.Next(-currentjulset.h / 2, currentjulset.h / 2);
             // вспомогательные переменные для приведения координат
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
-            double xStep = 2 * r / w;
-            double yStep = 2 * r / h;
-            double yhelp = 2 * r * (1 - zoom);
+            double xStep = 2 * r / currentjulset.w;
+            double yStep = 2 * r / currentjulset.h;
+            double yhelp = 2 * r * (1 - currentjulset.zoom);
 
-            double yfirst = h - h * zoom + randh;
-            double xfirst = w - w * zoom + randw;
-            double ylast = h * zoom + randh;
-            double xlast = w * zoom + randw;
+            double yfirst = currentjulset.h - currentjulset.h * currentjulset.zoom + currentjulset.randh;
+            double xfirst = currentjulset.w - currentjulset.w * currentjulset.zoom + currentjulset.randw;
+            double ylast = currentjulset.h * currentjulset.zoom + currentjulset.randh;
+            double xlast = currentjulset.w * currentjulset.zoom + currentjulset.randw;
 
             // чтобы убивать повторяющиеся
             double predx = 0;
@@ -64,10 +56,9 @@ namespace galgen
 
             bool eptline = true;
             // первая строка по иксу (y = 0)
-            //Parallel.For(0, 99, (index, loopState) =>
             for (double x = xfirst; x < xlast; x++)
             {
-                int i = maxIter;
+                int i = currentjulset.maxiter;
                 Complex z = new Complex(-r + x * xStep, -r + yfirst * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
@@ -78,19 +69,17 @@ namespace galgen
                 {
                     eptline = false;
                     break;
-                    //loopState.Stop();
                 }
-            }//);
+            }
             if (eptline)// == false)
             {
-                goto startofcycle;
+                return;
             }
             // последняя строка по иксу (y = 99)
             eptline = true;
             for (double x = xfirst; x < xlast; x++)
-            //Parallel.For(0, 99, (index, loopState) =>
             {
-                int i = maxIter;
+                int i = currentjulset.maxiter;
                 Complex z = new Complex(-r + x * xStep, -r + ylast * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
@@ -101,19 +90,17 @@ namespace galgen
                 {
                     eptline = false;
                     break;
-                    //loopState.Stop();
                 }
-            }//);
+            }
             if (eptline)// == false)
             {
-                goto startofcycle;
+                return;
             }
             // первая строка по игреку (x = 0)
             eptline = true;
             for (double y = yfirst; y < ylast; y++)
-            //Parallel.For(0, 99, (index, loopState) =>
             {
-                int i = maxIter;
+                int i = currentjulset.maxiter;
                 Complex z = new Complex(-r + xfirst * xStep, -r + y * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
@@ -124,19 +111,17 @@ namespace galgen
                 {
                     eptline = false;
                     break;
-                    //loopState.Stop();
                 }
-            }//);
+            }
             if (eptline)// == false)
             {
-                goto startofcycle;
+                return;
             }
             // последняя строка по игреку (x = 99)
             eptline = true;
             for (double y = yfirst; y < ylast; y++)
-            //Parallel.For(0, 99, (index, loopState) =>
             {
-                int i = maxIter;
+                int i = currentjulset.maxiter;
                 Complex z = new Complex(-r + xlast * xStep, -r + y * yStep);
                 while (Complex.Abs(z) < r && i != 0)
                 {
@@ -147,22 +132,20 @@ namespace galgen
                 {
                     eptline = false;
                     break;
-                    //loopState.Stop();
                 }
-            }//);
+            }
             if (eptline)// == false)
             {
-                goto startofcycle;
+                return;
             }
             int yy = 0;
-
-            //Parallel.For(0, 99, (index, loopState) =>
+            
             for (double y = yfirst; y < ylast; y++)
             {
                 int xx = 0;
                 for (double x = xfirst; x < xlast; x++)
                 {
-                    int i = maxIter;
+                    int i = currentjulset.maxiter;
                     Complex z = new Complex(-r + x * xStep, -r + y * yStep);
                     while (Complex.Abs(z) < r && i != 0)
                     {
@@ -183,44 +166,41 @@ namespace galgen
                         predx = x;
                         if (povtor == 0)
                         {
-                            vect.Add(new Point(xx, yy));
+                            currentjulset.points.Add(new Point(xx, yy));
                         }
                     }
                     xx++;
                 }
                 yy++;
-                if (vect.Count > 3000)
-                    //loopState.Stop();
-                    goto startofcycle;
-            }//);
-            startofcycle:
-            return vect;
+                if (currentjulset.points.Count > 3000)
+                    break;
+            }
         }
-        public static void exporttoconsole(List<Point> vect)
+        public static void exporttoconsole(JulSet currentjulset)
         {
             Console.Clear();
-            foreach (Point currentpoint in vect)
+            foreach (Point currentpoint in currentjulset.points)
             {
                 Console.SetCursorPosition(currentpoint.x, currentpoint.y);
                 Console.Write('#');
             }
             Console.WriteLine();
         }
-        public static void exporttopic(List<Point> vect, string Way_out_pic)
+        public static void exporttopic(JulSet currentjulset, string Way_out_pic)
         {
             Bitmap image = new Bitmap(100, 100);
-            foreach (Point currentpoint in vect)
+            foreach (Point currentpoint in currentjulset.points)
                 image.SetPixel(currentpoint.x, currentpoint.y, Color.Black);
 
             image.Save(Way_out_pic);
         }
-        public static void exporttofile(List<Point> vect, int w, int h, int maxIter, double zoom, Random rnd, Log currentlog, string filename, string Way_out_file)
+        public static void exporttofile(JulSet currentjulset, Random rnd, string filename, string Way_out_file)
         {
             using (StreamWriter sw = new StreamWriter(Way_out_file))
             {
-                Shuffle(vect, rnd);
-                sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (vect.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
-                foreach (Point currentpoint in vect)
+                Shuffle(currentjulset.points, rnd);
+                sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (currentjulset.points.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
+                foreach (Point currentpoint in currentjulset.points)
                 {
                     int rand = rnd.Next(-2, 3);
                     int x = (10 * (currentpoint.x - 50) + rand);
@@ -234,16 +214,32 @@ namespace galgen
                         y -= 8;
                     else if (y < -500)
                         y += 8;
-                    sw.Write("\tsystem = {\n\t\tid = " + vect.IndexOf(currentpoint) + "\n\t\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
+                    sw.Write("\tsystem = {\n\t\tid = " + currentjulset.points.IndexOf(currentpoint) + "\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
                     if (rnd.Next(250) == 1)
                     {
                         rand = rnd.Next(40, 100);
                         sw.Write("\tnebula = {\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t\tradius = " + rand + "\n\t}\r");
                     }
                 }
-                sw.Write("\tsystem = {\n\t\tid = " + (vect.Count + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
-                sw.Write("}\n#h = " + h + "\n#w = " + w + "\n#c1 = " + currentlog.c1 + "\n#c2 = " + currentlog.c2 + "\n#zoom = " + zoom + "\n#iter = " + maxIter + "\n#randh = " + currentlog.randh + "\n#randw = " + currentlog.randw);
+                sw.Write("\tsystem = {\n\t\tid = " + (currentjulset.points.Count + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
+                sw.Write("}\n#h = " + currentjulset.h + "\n#w = " + currentjulset.w + "\n#c1 = " + currentjulset.c1 + "\n#c2 = " + currentjulset.c2 + "\n#zoom = " + currentjulset.zoom + "\n#iter = " + currentjulset.maxiter + "\n#randh = " + currentjulset.randh + "\n#randw = " + currentjulset.randw);
             }
+        }
+        public static List<object> getvaluesfromjulset(JulSet currentjulset)
+        {
+            List<object> values = new List<object>();
+            values.Add(currentjulset.imageId);
+            values.Add(currentjulset.isGood);
+            values.Add(currentjulset.h);
+            values.Add(currentjulset.w);
+            values.Add(currentjulset.zoom);
+            values.Add(currentjulset.maxiter);
+            values.Add(currentjulset.randh);
+            values.Add(currentjulset.randw);
+            values.Add(currentjulset.c1);
+            values.Add(currentjulset.c2);
+
+            return values;
         }
 
         public static void Main(string[] args)
@@ -265,71 +261,72 @@ namespace galgen
                 Directory.CreateDirectory(dir.Value);
             }
             string Way_out_pic = null;
-            int randomSeed = 0;
             Random rnd = new Random();
             // set parameters
             int w = 10000;
             int h = 10000;
-            int maxIter = 350;
+            int maxiter = 350;
             double zoom = 0.505;
 
             // other values
-            int randw = 0;
-            int randh = 0;
-            Complex c = 0;
+            //int randw = 0;
+            //int randh = 0;
+            //Complex c = 0;
 
             Stopwatch st = new Stopwatch();
             st.Start();
 
-            List<List<Point>> maps = new List<List<Point>>();
-            List<Log> log = new List<Log>();
+            List<JulSet> maps = new List<JulSet>();
             int startvalue = 1800;
-            Parallel.For(startvalue, startvalue + 201, index =>
+            Parallel.For(startvalue, startvalue + 21, index =>
             //for (int index = startvalue; index < startvalue + 21; index++)
             {
-                List<Point> vect = new List<Point>();
+                JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
                 {
-                    vect = GenJulSet(w, h, maxIter, zoom, randomSeed);
-                } while (vect.Count > 3000 || vect.Count < 50);
+                    GenJulSet(currentjulset, rnd);
+                } while (currentjulset.points.Count > 3000 || currentjulset.points.Count < 50);
 
-                maps.Add(vect);
-                log.Add(new Log((maps.Count - 1), 0, randh, randw, c.Real, c.Imaginary));
+                maps.Add(currentjulset);
                 Console.WriteLine(maps.Count/2);
             });
             Console.WriteLine(st.Elapsed);
             Console.WriteLine(maps.Count);
-            foreach (List<Point> vect in maps)
+            foreach (JulSet currentjulset in maps)
             {
                 // file name
-                string filename = "Insane Julia Set Rand NS " + (maps.IndexOf(vect) + startvalue);
+                string filename = "Insane Julia Set Rand NS " + (maps.IndexOf(currentjulset) + startvalue);
 
                 // export to console
-                //exporttoconsole(vect);
+                exporttoconsole(currentjulset);
 
                 Way_out_pic = Path.Combine(dirs["bad_pics"], filename + ".jpg");
 
-                //if (Console.ReadKey().Key == ConsoleKey.Enter)
-                //{
-                //    Way_out_pic = Path.Combine(picdirectorygood, filename + ".jpg");
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                {
+                    Way_out_pic = Path.Combine(dirs["good_pics"], filename + ".jpg");
+
+                    currentjulset.isGood = 1;
+
+                    // вывод в файл
+                    exporttofile(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
+
+                }
+                Console.Clear();
                 
-
-                //}
-
-                //Console.Clear();
-
-                // вывод в файл
-                exporttofile(vect, w, h, maxIter, zoom, rnd, log[maps.IndexOf(vect)], filename, Path.Combine(dirs["map_new"], filename + ".txt"));
-
                 // export to pic
-                exporttopic(vect, Way_out_pic);
+                exporttopic(currentjulset, Way_out_pic);
 
             }
-            //using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
-            //{
-            //    foreach (Tuple<int, int, int, int, double, double> currentpoint in log)
-            //        sw.Write(currentpoint + "\n");
-            //}
+            using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
+            {
+                foreach (JulSet currentjulset in maps)
+                {
+                    foreach (object currentvalue in getvaluesfromjulset(currentjulset))
+                        sw.Write(currentvalue + ";");
+                    sw.Write("\n");
+                }
+            }
             st.Stop();
             Console.WriteLine(st.Elapsed);
         }
@@ -346,19 +343,25 @@ namespace galgen
         }
     }
 
-    public struct Log
+    public class JulSet
     {
-        public double c1, c2;
-        public int imageId, isGood, randh, randw;
+        public List<Point> points;
+        public double c1, c2, zoom;
+        public int w, h, maxiter, imageId, isGood, randh, randw;
 
-        public Log(int imageId, int isGood, int randh, int randw, double c1, double c2)
+        public JulSet(int imageId, int isGood, int w, int h, double zoom, int maxiter, int randh, int randw, double c1, double c2, List<Point> points)
         {
             this.imageId = imageId;
             this.isGood = isGood;
+            this.w = w;
+            this.h = h;
+            this.zoom = zoom;
+            this.maxiter = maxiter;
             this.randh = randh;
             this.randw = randw;
             this.c1 = c1;
             this.c2 = c2;
+            this.points = points;
         }
     }
 }
