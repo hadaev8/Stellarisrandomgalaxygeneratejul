@@ -24,6 +24,7 @@ namespace galgen
         }
         public static void GenJulSet(JulSet currentjulset, Random rnd)
         {
+            currentjulset.points.Clear();
             // рандомим произвольную постоянную
             currentjulset.c1 = rnd.NextDouble();
             currentjulset.c2 = rnd.NextDouble();
@@ -178,7 +179,7 @@ namespace galgen
         }
         public static void exporttoconsole(JulSet currentjulset)
         {
-            Console.Clear();
+            //Console.Clear();
             foreach (Point currentpoint in currentjulset.points)
             {
                 Console.SetCursorPosition(currentpoint.x, currentpoint.y);
@@ -278,13 +279,14 @@ namespace galgen
 
             List<JulSet> maps = new List<JulSet>();
             int startvalue = 1800;
-            Parallel.For(startvalue, startvalue + 21, index =>
+            Parallel.For(startvalue, startvalue + 201, index =>
             //for (int index = startvalue; index < startvalue + 21; index++)
             {
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
                 {
                     GenJulSet(currentjulset, rnd);
+                    //Console.WriteLine(currentjulset.points.Count);
                 } while (currentjulset.points.Count > 3000 || currentjulset.points.Count < 50);
 
                 maps.Add(currentjulset);
@@ -310,7 +312,6 @@ namespace galgen
 
                     // вывод в файл
                     exporttofile(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
-
                 }
                 Console.Clear();
                 
