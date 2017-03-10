@@ -248,6 +248,7 @@ namespace galgen
             Console.WindowHeight = Console.LargestWindowHeight;
             Console.WindowWidth = Console.LargestWindowWidth;
             string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "text generation");
+            string Way_out_pic = null;
             Dictionary<string, string> dirs = new Dictionary<string, string>()
             {
                 { "map_new",  Path.Combine(directory, "map_new") },
@@ -261,39 +262,33 @@ namespace galgen
                     Directory.Delete(dir.Value, true);
                 Directory.CreateDirectory(dir.Value);
             }
-            string Way_out_pic = null;
+            
             Random rnd = new Random();
-            // set parameters
+
+            // parameters for set
             int w = 10000;
             int h = 10000;
             int maxiter = 350;
             double zoom = 0.505;
-
-            // other values
-            //int randw = 0;
-            //int randh = 0;
-            //Complex c = 0;
-
+            
             Stopwatch st = new Stopwatch();
             st.Start();
 
             List<JulSet> maps = new List<JulSet>();
             int startvalue = 1800;
             Parallel.For(startvalue, startvalue + 201, index =>
-            //for (int index = startvalue; index < startvalue + 21; index++)
             {
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
                 {
                     GenJulSet(currentjulset, rnd);
-                    //Console.WriteLine(currentjulset.points.Count);
                 } while (currentjulset.points.Count > 3000 || currentjulset.points.Count < 50);
 
                 maps.Add(currentjulset);
-                Console.WriteLine(maps.Count/2);
+                Console.Clear();
+                Console.WriteLine(maps.Count/2 + "%");
             });
             Console.WriteLine(st.Elapsed);
-            Console.WriteLine(maps.Count);
             foreach (JulSet currentjulset in maps)
             {
                 // file name
@@ -310,15 +305,15 @@ namespace galgen
 
                     currentjulset.isGood = 1;
 
-                    // вывод в файл
+                    // export to stellaris file
                     exporttofile(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
                 }
                 Console.Clear();
                 
                 // export to pic
                 exporttopic(currentjulset, Way_out_pic);
-
             }
+            // print log
             using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
             {
                 foreach (JulSet currentjulset in maps)
