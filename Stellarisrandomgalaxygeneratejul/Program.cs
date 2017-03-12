@@ -275,7 +275,7 @@ namespace galgen
             st.Start();
 
             List<JulSet> maps = new List<JulSet>();
-            int startvalue = 1800;
+            int startvalue = 800;
             Parallel.For(startvalue, startvalue + 201, index =>
             {
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
@@ -289,6 +289,9 @@ namespace galgen
                 Console.WriteLine(maps.Count/2 + "%");
             });
             Console.WriteLine(st.Elapsed);
+            Console.WriteLine("Press Enter for mark map as good, other button to mark as bad. Press Enter to continue.");
+            Console.ReadKey();
+            Console.Clear();
             foreach (JulSet currentjulset in maps)
             {
                 // file name
