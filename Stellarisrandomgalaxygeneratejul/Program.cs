@@ -5,6 +5,7 @@ using System.IO;
 using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace galgen
 {
@@ -192,8 +193,15 @@ namespace galgen
             Bitmap image = new Bitmap(100, 100);
             foreach (Point currentpoint in currentjulset.points)
                 image.SetPixel(currentpoint.x, currentpoint.y, Color.Black);
-
-            image.Save(Way_out_pic);
+            try
+            {
+                image.Save(Way_out_pic);
+            }
+            catch
+            {
+                Console.WriteLine("error" + Way_out_pic);
+                Console.ReadKey();
+            }
         }
         public static void exporttofile(JulSet currentjulset, Random rnd, string filename, string Way_out_file)
         {
@@ -203,9 +211,9 @@ namespace galgen
                 sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (currentjulset.points.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
                 foreach (Point currentpoint in currentjulset.points)
                 {
-                    int rand = rnd.Next(-2, 3);
+                    int rand = rnd.Next(-3, 4);
                     int x = (10 * (currentpoint.x - 50) + rand);
-                    rand = rnd.Next(-2, 3);
+                    rand = rnd.Next(-3, 4);
                     int y = (10 * (currentpoint.y - 50) + rand);
                     if (x > 500)
                         x -= 8;
@@ -237,14 +245,15 @@ namespace galgen
             values.Add(currentjulset.maxiter);
             values.Add(currentjulset.randh);
             values.Add(currentjulset.randw);
-            values.Add(currentjulset.c1);
-            values.Add(currentjulset.c2);
+            values.Add(currentjulset.c1.ToString());
+            values.Add(currentjulset.c2.ToString());
 
             return values;
         }
 
         public static void Main(string[] args)
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             Console.WindowHeight = Console.LargestWindowHeight;
             Console.WindowWidth = Console.LargestWindowWidth;
             string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "text generation");
@@ -273,10 +282,10 @@ namespace galgen
             
             Stopwatch st = new Stopwatch();
             st.Start();
-
+            
             List<JulSet> maps = new List<JulSet>();
-            int startvalue = 800;
-            Parallel.For(startvalue, startvalue + 201, index =>
+            int startvalue = 1400;
+            Parallel.For(startvalue + 1, startvalue + 200, index =>
             {
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
@@ -290,7 +299,7 @@ namespace galgen
             });
             Console.WriteLine(st.Elapsed);
             Console.WriteLine("Press Enter for mark map as good, other button to mark as bad. Press Enter to continue.");
-            Console.ReadKey();
+            //Console.ReadKey();
             Console.Clear();
             foreach (JulSet currentjulset in maps)
             {
@@ -299,7 +308,7 @@ namespace galgen
 
                 // export to console
                 exporttoconsole(currentjulset);
-
+                Console.WriteLine(filename);
                 Way_out_pic = Path.Combine(dirs["bad_pics"], filename + ".jpg");
 
                 if (Console.ReadKey().Key == ConsoleKey.Enter)
@@ -317,7 +326,8 @@ namespace galgen
                 exporttopic(currentjulset, Way_out_pic);
             }
             // print log
-            using (StreamWriter sw = new StreamWriter(Path.Combine(directory, "log.txt")))
+            string logname = "log " + DateTime.Now.ToString(new CultureInfo("ru-RU")) + ".txt";
+            using (StreamWriter sw = new StreamWriter(Path.Combine(directory, logname.Replace(":", "."))))
             {
                 foreach (JulSet currentjulset in maps)
                 {
