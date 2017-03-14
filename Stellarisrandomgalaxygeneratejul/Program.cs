@@ -23,10 +23,10 @@ namespace galgen
                 list[n] = value;
             }
         }
-        public static void GenJulSet(JulSet currentjulset, Random rnd)
+        public static void gen_julset(JulSet currentjulset, Random rnd)
         {
             currentjulset.points.Clear();
-            // рандомим произвольную постоянную
+            // random arbitrary constant
             currentjulset.c1 = rnd.NextDouble();
             currentjulset.c2 = rnd.NextDouble();
             if (rnd.Next(2) == 1)
@@ -38,10 +38,10 @@ namespace galgen
                 currentjulset.c2 = currentjulset.c2 * (-1);
             }
             Complex c = new Complex(currentjulset.c1, currentjulset.c2);
-            // рандомный сдвиг, если нужен
+            // random shift if needed
             currentjulset.randw = rnd.Next(-currentjulset.w / 2, currentjulset.w / 2);
             currentjulset.randh = rnd.Next(-currentjulset.h / 2, currentjulset.h / 2);
-            // вспомогательные переменные для приведения координат
+            // auxiliary variables for coordinates
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
             double xStep = 2 * r / currentjulset.w;
             double yStep = 2 * r / currentjulset.h;
@@ -52,12 +52,12 @@ namespace galgen
             double ylast = currentjulset.h * currentjulset.zoom + currentjulset.randh;
             double xlast = currentjulset.w * currentjulset.zoom + currentjulset.randw;
 
-            // чтобы убивать повторяющиеся
+            // for remove repeat points
             double predx = 0;
             int povtor = 0;
 
             bool eptline = true;
-            // первая строка по иксу (y = 0)
+            // first line on x (y = 0)
             for (double x = xfirst; x < xlast; x++)
             {
                 int i = currentjulset.maxiter;
@@ -77,7 +77,7 @@ namespace galgen
             {
                 return;
             }
-            // последняя строка по иксу (y = 99)
+            // last line on x (y = 99)
             eptline = true;
             for (double x = xfirst; x < xlast; x++)
             {
@@ -98,7 +98,7 @@ namespace galgen
             {
                 return;
             }
-            // первая строка по игреку (x = 0)
+            // first line on y (x = 0)
             eptline = true;
             for (double y = yfirst; y < ylast; y++)
             {
@@ -119,7 +119,7 @@ namespace galgen
             {
                 return;
             }
-            // последняя строка по игреку (x = 99)
+            // last line on y (x = 99)
             eptline = true;
             for (double y = yfirst; y < ylast; y++)
             {
@@ -178,7 +178,7 @@ namespace galgen
                     break;
             }
         }
-        public static void exporttoconsole(JulSet currentjulset)
+        public static void export_to_console(JulSet currentjulset)
         {
             //Console.Clear();
             foreach (Point currentpoint in currentjulset.points)
@@ -188,24 +188,26 @@ namespace galgen
             }
             Console.WriteLine();
         }
-        public static void exporttopic(JulSet currentjulset, string Way_out_pic)
+        public static void export_to_pic(JulSet currentjulset, string way_out_pic)
         {
-            Bitmap image = new Bitmap(100, 100);
-            foreach (Point currentpoint in currentjulset.points)
-                image.SetPixel(currentpoint.x, currentpoint.y, Color.Black);
-            try
+            using (Bitmap image = new Bitmap(100, 100))
             {
-                image.Save(Way_out_pic);
-            }
-            catch
-            {
-                Console.WriteLine("error" + Way_out_pic);
-                Console.ReadKey();
+                foreach (Point currentpoint in currentjulset.points)
+                    image.SetPixel(currentpoint.x, currentpoint.y, Color.Black);
+                try
+                {
+                    image.Save(way_out_pic);
+                }
+                catch
+                {
+                    Console.WriteLine("error " + way_out_pic);
+                    Console.ReadKey();
+                }
             }
         }
-        public static void exporttofile(JulSet currentjulset, Random rnd, string filename, string Way_out_file)
+        public static void export_to_file(JulSet currentjulset, Random rnd, string filename, string way_out_file)
         {
-            using (StreamWriter sw = new StreamWriter(Way_out_file))
+            using (StreamWriter sw = new StreamWriter(way_out_file))
             {
                 Shuffle(currentjulset.points, rnd);
                 sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (currentjulset.points.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
@@ -234,7 +236,7 @@ namespace galgen
                 sw.Write("}\n#h = " + currentjulset.h + "\n#w = " + currentjulset.w + "\n#c1 = " + currentjulset.c1 + "\n#c2 = " + currentjulset.c2 + "\n#zoom = " + currentjulset.zoom + "\n#iter = " + currentjulset.maxiter + "\n#randh = " + currentjulset.randh + "\n#randw = " + currentjulset.randw);
             }
         }
-        public static List<object> getvaluesfromjulset(JulSet currentjulset)
+        public static List<object> get_values_from_julset(JulSet currentjulset)
         {
             List<object> values = new List<object>();
             values.Add(currentjulset.imageId);
@@ -245,19 +247,18 @@ namespace galgen
             values.Add(currentjulset.maxiter);
             values.Add(currentjulset.randh);
             values.Add(currentjulset.randw);
-            values.Add(currentjulset.c1.ToString());
-            values.Add(currentjulset.c2.ToString());
+            values.Add(currentjulset.c1.ToString(new CultureInfo("en-US")));
+            values.Add(currentjulset.c2.ToString(new CultureInfo("en-US")));
 
             return values;
         }
 
         public static void Main(string[] args)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             Console.WindowHeight = Console.LargestWindowHeight;
             Console.WindowWidth = Console.LargestWindowWidth;
             string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "text generation");
-            string Way_out_pic = null;
+            string way_out_pic = null;
             Dictionary<string, string> dirs = new Dictionary<string, string>()
             {
                 { "map_new",  Path.Combine(directory, "map_new") },
@@ -290,7 +291,7 @@ namespace galgen
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
                 {
-                    GenJulSet(currentjulset, rnd);
+                    gen_julset(currentjulset, rnd);
                 } while (currentjulset.points.Count > 3000 || currentjulset.points.Count < 50);
 
                 maps.Add(currentjulset);
@@ -299,39 +300,39 @@ namespace galgen
             });
             Console.WriteLine(st.Elapsed);
             Console.WriteLine("Press Enter for mark map as good, other button to mark as bad. Press Enter to continue.");
-            //Console.ReadKey();
+            Console.ReadKey();
             Console.Clear();
             foreach (JulSet currentjulset in maps)
             {
                 // file name
                 string filename = "Insane Julia Set Rand NS " + (maps.IndexOf(currentjulset) + startvalue);
+                way_out_pic = Path.Combine(dirs["bad_pics"], filename + ".jpg");
 
                 // export to console
-                exporttoconsole(currentjulset);
+                export_to_console(currentjulset);
                 Console.WriteLine(filename);
-                Way_out_pic = Path.Combine(dirs["bad_pics"], filename + ".jpg");
-
+                
                 if (Console.ReadKey().Key == ConsoleKey.Enter)
                 {
-                    Way_out_pic = Path.Combine(dirs["good_pics"], filename + ".jpg");
+                    way_out_pic = Path.Combine(dirs["good_pics"], filename + ".jpg");
 
                     currentjulset.isGood = 1;
 
                     // export to stellaris file
-                    exporttofile(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
+                    export_to_file(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
                 }
                 Console.Clear();
                 
                 // export to pic
-                exporttopic(currentjulset, Way_out_pic);
+                export_to_pic(currentjulset, way_out_pic);
             }
             // print log
-            string logname = "log " + DateTime.Now.ToString(new CultureInfo("ru-RU")) + ".txt";
+            string logname = "log " + DateTime.Now.ToString() + ".txt";
             using (StreamWriter sw = new StreamWriter(Path.Combine(directory, logname.Replace(":", "."))))
             {
                 foreach (JulSet currentjulset in maps)
                 {
-                    foreach (object currentvalue in getvaluesfromjulset(currentjulset))
+                    foreach (object currentvalue in get_values_from_julset(currentjulset))
                         sw.Write(currentvalue + ";");
                     sw.Write("\n");
                 }
