@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Globalization;
+using System.Threading;
 
 namespace galgen
 {
@@ -26,6 +27,7 @@ namespace galgen
         public static void gen_julset(JulSet currentjulset, Random rnd)
         {
             currentjulset.points.Clear();
+
             // random arbitrary constant
             currentjulset.c1 = rnd.NextDouble();
             currentjulset.c2 = rnd.NextDouble();
@@ -38,9 +40,11 @@ namespace galgen
                 currentjulset.c2 = currentjulset.c2 * (-1);
             }
             Complex c = new Complex(currentjulset.c1, currentjulset.c2);
+
             // random shift if needed
             currentjulset.randw = rnd.Next(-currentjulset.w / 2, currentjulset.w / 2);
             currentjulset.randh = rnd.Next(-currentjulset.h / 2, currentjulset.h / 2);
+
             // auxiliary variables for coordinates
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
             double xStep = 2 * r / currentjulset.w;
@@ -140,8 +144,8 @@ namespace galgen
             {
                 return;
             }
-            int yy = 0;
-            
+
+            int yy = 0;            
             for (double y = yfirst; y < ylast; y++)
             {
                 int xx = 0;
@@ -327,7 +331,7 @@ namespace galgen
                 export_to_pic(currentjulset, way_out_pic);
             }
             // print log
-            string logname = "log " + DateTime.Now.ToString() + ".txt";
+            string logname = "log " + DateTime.Now.ToString(new CultureInfo("ru-RU")) + ".txt";
             using (StreamWriter sw = new StreamWriter(Path.Combine(directory, logname.Replace(":", "."))))
             {
                 foreach (JulSet currentjulset in maps)
