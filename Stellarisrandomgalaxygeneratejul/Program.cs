@@ -12,6 +12,20 @@ namespace galgen
 {
     public class Program
     {
+        // parameters for set
+        public static int w = 1000;
+        public static int h = 1000;
+        public static int maxiter = 150;
+        public static double zoom = 0.5;//505;
+        // start index
+        public static int startvalue = 2000;
+        // num pam needed
+        public static int mapcountvalue = 5000;
+        // max of stars
+        public static int map_star_max = 1500;
+        // mi of stars
+        public static int map_star_min = 500;
+
         public static void Shuffle<T>(IList<T> list, Random rnd)
         {
             int n = list.Count;
@@ -49,107 +63,106 @@ namespace galgen
             double r = 0.5 * (1 + Math.Sqrt(1 + 4 * Complex.Abs(c)));
             double xStep = 2 * r / currentjulset.w;
             double yStep = 2 * r / currentjulset.h;
-            double yhelp = 2 * r * (1 - currentjulset.zoom);
+            //double yhelp = 2 * r * (1 - currentjulset.zoom);
 
-            double yfirst = currentjulset.h - currentjulset.h * currentjulset.zoom + currentjulset.randh;
-            double xfirst = currentjulset.w - currentjulset.w * currentjulset.zoom + currentjulset.randw;
-            double ylast = currentjulset.h * currentjulset.zoom + currentjulset.randh;
-            double xlast = currentjulset.w * currentjulset.zoom + currentjulset.randw;
+            int yfirst = (int)(currentjulset.h - currentjulset.h * currentjulset.zoom + currentjulset.randh);
+            int xfirst = (int)(currentjulset.w - currentjulset.w * currentjulset.zoom + currentjulset.randw);
+            int ylast = yfirst + 100;
+            int xlast = xfirst + 100;
 
             // for remove repeat points
             double predx = 0;
             int povtor = 0;
 
-            bool eptline = true;
+            //bool eptline = true;
             // first line on x (y = 0)
-            for (double x = xfirst; x < xlast; x++)
-            {
-                int i = currentjulset.maxiter;
-                Complex z = new Complex(-r + x * xStep, -r + yfirst * yStep);
-                while (Complex.Abs(z) < r && i != 0)
-                {
-                    z = (z * z + c);
-                    --i;
-                }
-                if (i == 0)
-                {
-                    eptline = false;
-                    break;
-                }
-            }
-            if (eptline)// == false)
-            {
-                return;
-            }
-            // last line on x (y = 99)
-            eptline = true;
-            for (double x = xfirst; x < xlast; x++)
-            {
-                int i = currentjulset.maxiter;
-                Complex z = new Complex(-r + x * xStep, -r + ylast * yStep);
-                while (Complex.Abs(z) < r && i != 0)
-                {
-                    z = (z * z + c);
-                    --i;
-                }
-                if (i == 0)
-                {
-                    eptline = false;
-                    break;
-                }
-            }
-            if (eptline)// == false)
-            {
-                return;
-            }
-            // first line on y (x = 0)
-            eptline = true;
-            for (double y = yfirst; y < ylast; y++)
-            {
-                int i = currentjulset.maxiter;
-                Complex z = new Complex(-r + xfirst * xStep, -r + y * yStep);
-                while (Complex.Abs(z) < r && i != 0)
-                {
-                    z = (z * z + c);
-                    --i;
-                }
-                if (i == 0)
-                {
-                    eptline = false;
-                    break;
-                }
-            }
-            if (eptline)// == false)
-            {
-                return;
-            }
-            // last line on y (x = 99)
-            eptline = true;
-            for (double y = yfirst; y < ylast; y++)
-            {
-                int i = currentjulset.maxiter;
-                Complex z = new Complex(-r + xlast * xStep, -r + y * yStep);
-                while (Complex.Abs(z) < r && i != 0)
-                {
-                    z = (z * z + c);
-                    --i;
-                }
-                if (i == 0)
-                {
-                    eptline = false;
-                    break;
-                }
-            }
-            if (eptline)// == false)
-            {
-                return;
-            }
-
+            //for (int x = xfirst; x < xlast; x++)
+            //{
+            //    int i = currentjulset.maxiter;
+            //    Complex z = new Complex(-r + x * xStep, -r + yfirst * yStep);
+            //    while (Complex.Abs(z) < r && i != 0)
+            //    {
+            //        z = (z * z + c);
+            //        --i;
+            //    }
+            //    if (i == 0)
+            //    {
+            //        eptline = false;
+            //        break;
+            //    }
+            //}
+            //if (eptline)// == false)
+            //{
+            //    return;
+            //}
+            //// last line on x (y = 99)
+            //eptline = true;
+            //for (int x = xfirst; x < xlast; x++)
+            //{
+            //    int i = currentjulset.maxiter;
+            //    Complex z = new Complex(-r + x * xStep, -r + ylast * yStep);
+            //    while (Complex.Abs(z) < r && i != 0)
+            //    {
+            //        z = (z * z + c);
+            //        --i;
+            //    }
+            //    if (i == 0)
+            //    {
+            //        eptline = false;
+            //        break;
+            //    }
+            //}
+            //if (eptline)// == false)
+            //{
+            //    return;
+            //}
+            //// first line on y (x = 0)
+            //eptline = true;
+            //for (int y = yfirst; y < ylast; y++)
+            //{
+            //    int i = currentjulset.maxiter;
+            //    Complex z = new Complex(-r + xfirst * xStep, -r + y * yStep);
+            //    while (Complex.Abs(z) < r && i != 0)
+            //    {
+            //        z = (z * z + c);
+            //        --i;
+            //    }
+            //    if (i == 0)
+            //    {
+            //        eptline = false;
+            //        break;
+            //    }
+            //}
+            //if (eptline)// == false)
+            //{
+            //    return;
+            //}
+            //// last line on y (x = 99)
+            //eptline = true;
+            //for (int y = yfirst; y < ylast; y++)
+            //{
+            //    int i = currentjulset.maxiter;
+            //    Complex z = new Complex(-r + xlast * xStep, -r + y * yStep);
+            //    while (Complex.Abs(z) < r && i != 0)
+            //    {
+            //        z = (z * z + c);
+            //        --i;
+            //    }
+            //    if (i == 0)
+            //    {
+            //        eptline = false;
+            //        break;
+            //    }
+            //}
+            //if (eptline)// == false)
+            //{
+            //    return;
+            //}
             int yy = 0;            
-            for (double y = yfirst; y < ylast; y++)
+            for (int y = yfirst; y < ylast; y++)
             {
                 int xx = 0;
-                for (double x = xfirst; x < xlast; x++)
+                for (int x = xfirst; x < xlast; x++)
                 {
                     int i = currentjulset.maxiter;
                     Complex z = new Complex(-r + x * xStep, -r + y * yStep);
@@ -178,7 +191,7 @@ namespace galgen
                     xx++;
                 }
                 yy++;
-                if (currentjulset.points.Count > 3000)
+                if (currentjulset.points.Count > map_star_max)
                     break;
             }
         }
@@ -217,10 +230,8 @@ namespace galgen
                 sw.Write("static_galaxy_scenario = {\n\tname = \"" + filename.Replace(".txt", "") + " stars: " + (currentjulset.points.Count + 1) + "\"\n\tpriority = 0\n\tdefault = no\n\tcolonizable_planet_odds = 1.0\n\tnum_empires = { min = 0 max = 60 }\n\tnum_empire_default = 21\n\tfallen_empire_default = 4\n\tfallen_empire_max = 4\n\tadvanced_empire_default = 7\n\tcore_radius = 0\n\trandom_hyperlanes = yes\n\n");
                 foreach (Point currentpoint in currentjulset.points)
                 {
-                    int rand = rnd.Next(-3, 4);
-                    int x = (10 * (currentpoint.x - 50) + rand);
-                    rand = rnd.Next(-3, 4);
-                    int y = (10 * (currentpoint.y - 50) + rand);
+                    int x = (10 * (currentpoint.x - 50) + rnd.Next(-3, 4));
+                    int y = (10 * (currentpoint.y - 50) + rnd.Next(-3, 4));
                     if (x > 500)
                         x -= 8;
                     else if (x < -500)
@@ -232,8 +243,7 @@ namespace galgen
                     sw.Write("\tsystem = {\n\t\tid = " + currentjulset.points.IndexOf(currentpoint) + "\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t}\r");
                     if (rnd.Next(250) == 1)
                     {
-                        rand = rnd.Next(40, 100);
-                        sw.Write("\tnebula = {\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t\tradius = " + rand + "\n\t}\r");
+                        sw.Write("\tnebula = {\n\t\tposition = {\n\t\t\tx = " + x + "\n\t\t\ty = " + y + "\n\t\t}\n\t\tradius = " + rnd.Next(40, 100) + "\n\t}\r");
                     }
                 }
                 sw.Write("\tsystem = {\n\t\tid = " + (currentjulset.points.Count + 1) + "\n\t\tposition = {\n\t\tx = 0\n\t\ty = 0\n\t\t}\n\t}\r");
@@ -278,29 +288,23 @@ namespace galgen
             }
             
             Random rnd = new Random();
-
-            // parameters for set
-            int w = 10000;
-            int h = 10000;
-            int maxiter = 350;
-            double zoom = 0.505;
             
             Stopwatch st = new Stopwatch();
             st.Start();
             
             List<JulSet> maps = new List<JulSet>();
-            int startvalue = 1400;
-            Parallel.For(startvalue + 1, startvalue + 200, index =>
+            
+            Parallel.For(startvalue, startvalue + mapcountvalue, index =>
             {
                 JulSet currentjulset = new JulSet(index, 0, w, h, zoom, maxiter, 0, 0, 0, 0, new List<Point>());
                 do
                 {
                     gen_julset(currentjulset, rnd);
-                } while (currentjulset.points.Count > 3000 || currentjulset.points.Count < 50);
+                } while (currentjulset.points.Count > map_star_max || currentjulset.points.Count < map_star_min);
 
                 maps.Add(currentjulset);
                 Console.Clear();
-                Console.WriteLine(maps.Count/2 + "%");
+                Console.WriteLine(maps.Count * 100 / (mapcountvalue) + "%");
             });
             Console.WriteLine(st.Elapsed);
             Console.WriteLine("Press Enter for mark map as good, other button to mark as bad. Press Enter to continue.");
@@ -315,16 +319,16 @@ namespace galgen
                 // export to console
                 export_to_console(currentjulset);
                 Console.WriteLine(filename);
-                
-                if (Console.ReadKey().Key == ConsoleKey.Enter)
-                {
-                    way_out_pic = Path.Combine(dirs["good_pics"], filename + ".jpg");
 
-                    currentjulset.isGood = 1;
+                //if (Console.ReadKey().Key == ConsoleKey.Enter)
+                //{
+                //    way_out_pic = Path.Combine(dirs["good_pics"], filename + ".jpg");
 
-                    // export to stellaris file
-                    export_to_file(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
-                }
+                //    currentjulset.isGood = 1;
+
+                //    // export to stellaris file
+                //    export_to_file(currentjulset, rnd, filename, Path.Combine(dirs["map_new"], filename + ".txt"));
+                //}
                 Console.Clear();
                 
                 // export to pic
